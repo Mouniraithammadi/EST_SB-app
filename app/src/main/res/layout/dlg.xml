@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    app:cardCornerRadius="8dp"
+    android:layout_height="wrap_content">
+  <LinearLayout
+                  android:layout_width="match_parent"
+                  android:padding="14dp"
+                  android:orientation="vertical"
+                  android:layout_height="wrap_content">
+    <TextView
+                android:id="@+id/title_dlg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Titel"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_gravity="center_horizontal"
+        />
+
+
+      <TextView
+        android:layout_margin="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000000"
+        />
+    <EditText
+        android:id="@+id/edt1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="EDIT1"
+        android:layout_margin="8dp"
+
+        />
+    <EditText
+        android:id="@+id/edt2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="EDIT2"
+        android:layout_margin="8dp"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <Button
+            android:text="Annuler"
+            android:id="@+id/annuler_button"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/ajouter_drawable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <Button
+            android:text="ajouter"
+            android:id="@+id/ajouter_button"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="9dp"
+            android:background="@drawable/ajouter_drawable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+
+    </RelativeLayout>
+</LinearLayout>
+</androidx.cardview.widget.CardView>
