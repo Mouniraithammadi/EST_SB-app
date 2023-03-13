@@ -1,5 +1,6 @@
 package com.project.est_sb;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -56,6 +57,7 @@ public class DataBaseHLPR extends SQLiteOpenHelper {
 
     private static final String DROP_ETUDIANT_TABLEAU = "DROP TABLE IF EXISTS " + ETUDIANT_TABLE_NM;
     private static final String SELECT_ETUDIANT_TABLEAU = "SELECT * FROM " + ETUDIANT_TABLE_NM;
+//    SELECT * FROM ETUDIANT_TABLEAU WHERE GROUPE_ID=? AND ETUDIANT_ID IN (SELECT ETUDIANT_ID FROM ETUDIANT_TABLEAU WHERE GROUPE_ID=? ORDER BY ETUDIANT_ID)
 
 
     //    3 table de ETUDIANTS :
@@ -88,6 +90,7 @@ public class DataBaseHLPR extends SQLiteOpenHelper {
         SQLITE_DB.execSQL(CREATION_DE_GROUPE_requete);
         SQLITE_DB.execSQL(CREATION_DE_ETUDIANT_requete);
         SQLITE_DB.execSQL(CREATION_DE_STATUS_requete);
+        SQLITE_DB.execSQL(CREATE_TABLE);
         Toast.makeText( context, "la base de données est créée ".toUpperCase(), Toast.LENGTH_SHORT ).show();
 
     }
@@ -98,6 +101,8 @@ public class DataBaseHLPR extends SQLiteOpenHelper {
             SQLITE_DB.execSQL(DROP_GROUPE_TABLEAU);
             SQLITE_DB.execSQL(DROP_ETUDIANT_TABLEAU);
             SQLITE_DB.execSQL(DROP_STATUS_TABLEAU);
+            SQLITE_DB.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            onCreate(SQLITE_DB);
         } catch (SQLException exp) {
             exp.printStackTrace();
         }
@@ -128,7 +133,7 @@ public class DataBaseHLPR extends SQLiteOpenHelper {
 
         return bdd.update(GROUPE_TABLE_NM , grp_values,GROUPES_ID+"=?" ,new String[]{String.valueOf( id )});
     }
-long setEtudiant(long grp_id , int roll , String name ){
+long addEtudiant(int grp_id , int roll , String name ){
         SQLiteDatabase bdd = this.getWritableDatabase();
         ContentValues values  = new ContentValues();
         values.put(GROUPES_ID , grp_id  );
@@ -136,10 +141,16 @@ long setEtudiant(long grp_id , int roll , String name ){
         values.put( ETUDIANTS_NM , name );
         return  bdd.insert( ETUDIANT_TABLE_NM , null , values );
 }
-Cursor getEtudiant(long grp_id){
+
+Cursor getEtudiantTable(long groupeId){
         SQLiteDatabase ndd = this.getReadableDatabase();
-        return ndd.query( SELECT_ETUDIANT_TABLEAU , null , GROUPES_ID+"=?", new String[]{String.valueOf( grp_id )},null, null , ETUDIANTS_ID );
-}
+      Cursor cur =  ndd.query(ETUDIANT_TABLE_NM , null , GROUPES_ID+"=?", new String[]{String.valueOf( groupeId )},null, null , ETUDIANT_ROLL );
+    return cur ;
+    //    SQLiteDatabase db = this.getReadableDatabase();
+//    String[] selectionArgs = { String.valueOf(groupeId) };
+//    String query = "SELECT * FROM ETUDIANT_TABLEAU WHERE GROUPE_ID=? ORDER BY ETUDIANT_ID;";
+//    return db.rawQuery(query, selectionArgs);
+  }
     long DELET_Etudiant(long id){
         SQLiteDatabase bdd = this.getReadableDatabase();
 
@@ -152,6 +163,71 @@ Cursor getEtudiant(long grp_id){
 
 
         return bdd.update(ETUDIANT_TABLE_NM , grp_values,ETUDIANTS_ID+"=?" ,new String[]{String.valueOf( id )});
+    }
+    @SuppressLint("Range")
+    public  boolean getGroupIdOfStudent(int studentId , int groupe_id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + GROUPES_ID + " FROM " + ETUDIANT_TABLE_NM + " WHERE " + ETUDIANTS_ID + " = ?", new String[]{String.valueOf(studentId)});
+        int groupId = -1; // default value in case no group is found
+        if (cursor.moveToFirst()) {
+            groupId = cursor.getInt(cursor.getColumnIndex(GROUPES_ID) );
+        }
+        cursor.close();
+        if(groupId == groupe_id) return true;
+        return false;
+    }
+    public int getGroupIdByGroupeNmAndSujet(String groupeNm, String groupeSujet) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int groupId = -1; // default value if no matching group is found
+
+        String selectQuery = "SELECT " + GROUPES_ID + " FROM " + GROUPE_TABLE_NM +
+                             " WHERE " + GROUPES_NM + " = ? AND " + SUJETS_NM + " = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{groupeNm, groupeSujet});
+
+        if (cursor.moveToFirst()) {
+            groupId = cursor.getInt(cursor.getColumnIndex(GROUPES_ID)-0);
+        }
+
+        cursor.close();
+        db.close();
+
+        return groupId;
+    }
+    private static final String TABLE_NAME = "users";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_USERNAME = "username";
+    private static final String COLUMN_PASSWORD = "password";
+    private static final String CREATE_TABLE =
+            "CREATE TABLE " + TABLE_NAME + "("
+            + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + COLUMN_USERNAME + " TEXT,"
+            + COLUMN_PASSWORD + " TEXT"
+            + ")";
+    public boolean checkUser(String username, String password) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] columns = { COLUMN_ID };
+        String selection = COLUMN_USERNAME + " = ?" + " AND " + COLUMN_PASSWORD + " = ?";
+        String[] selectionArgs = { username, password };
+        Cursor cursor = db.query(TABLE_NAME, columns, selection, selectionArgs, null, null, null);
+        int count = cursor.getCount();
+        cursor.close();
+        if (count > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public boolean insertData(String username, String password) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, username);
+        values.put(COLUMN_PASSWORD, password);
+        long result = db.insert(TABLE_NAME, null, values);
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 

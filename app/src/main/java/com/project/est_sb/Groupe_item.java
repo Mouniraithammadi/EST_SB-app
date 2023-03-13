@@ -3,6 +3,7 @@ package com.project.est_sb;
 public class Groupe_item {
     String group ;
     String sujet ;
+    long id ;
 
     public long getId() {
         return id;
@@ -12,7 +13,7 @@ public class Groupe_item {
         this.id = id;
     }
 
-    long id ;
+
 
     public Groupe_item(String g , String s) {
     sujet = s; group = g ;

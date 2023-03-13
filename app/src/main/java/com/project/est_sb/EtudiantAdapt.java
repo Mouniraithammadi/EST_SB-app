@@ -1,5 +1,6 @@
 package com.project.est_sb;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -40,11 +41,12 @@ public interface OnItemClickListenner{
         return new EtudiantVwHolder(itemView , onItemClickListenner);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull EtudiantVwHolder hldr, int p) {
         hldr.name.setText(etudiantItems.get(p).getName());
         hldr.status.setText(etudiantItems.get(p).getStatus());
-        hldr.roll.setText(etudiantItems.get(p).getRoll());
+        hldr.roll.setText(etudiantItems.get(p).getRoll()+"");
         hldr.card.setCardBackgroundColor(getColor(p));
     }
     private int getColor( int p ){

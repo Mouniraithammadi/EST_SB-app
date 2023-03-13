@@ -94,6 +94,7 @@ BDD = new DataBaseHLPR( this );
         intent.putExtra("GroupeName" , groupeItems.get(position).getGroup());
         intent.putExtra("SujetName" , groupeItems.get(position).getSujet());
         intent.putExtra("position" , position);
+        intent.putExtra("group_id" , groupeItems.get( position ).getId());
         startActivity(intent);
 
     }

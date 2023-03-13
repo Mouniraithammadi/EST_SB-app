@@ -4,8 +4,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Dialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageButton;
@@ -22,21 +22,28 @@ Toolbar toolbar ;
     private RecyclerView.LayoutManager layoutMngr ;
     private ArrayList<EtudiantItem> etudiantItems = new ArrayList<>() ;
     private int position ;
+    private DataBaseHLPR BDD;
+    private int g_id ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
+        BDD = new DataBaseHLPR( this );
+
         Intent intent = getIntent();
           groupName = intent.getStringExtra("GroupeName");
          sujetName =intent.getStringExtra("SujetName");
        position = intent.getIntExtra("position" , -1);
+       g_id = BDD.getGroupIdByGroupeNmAndSujet( groupName , sujetName );
        setToolbar();
+
        list = findViewById(R.id.etudiant_list) ;
        list.setHasFixedSize(true);
        layoutMngr = new LinearLayoutManager(this);
        list.setLayoutManager(layoutMngr);
        adapt = new EtudiantAdapt(this , etudiantItems) ;
        list.setAdapter( adapt );
+        loadBDD();
        adapt.setOnItemClickListenner(position -> changeStatus(position));
     }
 
@@ -70,13 +77,27 @@ Toolbar toolbar ;
     private void showAjouterEtudiantDialog() {
         MonDialog dialog = new MonDialog();
         dialog.show(getSupportFragmentManager() , MonDialog.ajouter_etud);
-        dialog.setlistener(this::ajouterEtudiant);
+        dialog.setlistener((rol , name)->ajouterEtudiant( rol , name));
     }
 
-    private void ajouterEtudiant(String roll, String name) {
-        etudiantItems.add(new EtudiantItem(roll , name));
+    private void ajouterEtudiant(String rol, String name) {
+         int roll = Integer.parseInt( rol ) ;
+        long e_id = BDD.addEtudiant( g_id , roll, name );
+        etudiantItems.add(new EtudiantItem( e_id , roll , name));
         adapt.notifyItemChanged(etudiantItems.size() - 1);
     }
+    private void loadBDD(){
+        Cursor curs = BDD.getEtudiantTable(g_id);
+        etudiantItems.clear();
+        while ( curs.moveToNext() ){
+             int  e_id = curs.getInt( curs.getColumnIndex(DataBaseHLPR.ETUDIANTS_ID ) -0);
+          String e_name =  curs.getString(curs.getColumnIndex(DataBaseHLPR.ETUDIANTS_NM) -0 );
+            int e_roll =  curs.getInt(curs.getColumnIndex(DataBaseHLPR.ETUDIANT_ROLL)-0);
+
+            if (BDD.getGroupIdOfStudent(e_id ,g_id )) etudiantItems.add( new EtudiantItem( e_id, e_roll , e_name));
+        }
+    curs.close();}
+
 
 
 }

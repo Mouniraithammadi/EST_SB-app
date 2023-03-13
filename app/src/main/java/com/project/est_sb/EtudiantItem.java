@@ -3,10 +3,12 @@ package com.project.est_sb;
 public class EtudiantItem {
     private String name ;
     private String status ;
-    private String roll;
+    private int roll;
+    private long e_id;
 
-    public EtudiantItem(String R , String  N){
+    public EtudiantItem( long id ,int  R , String  N){
         name= N ; roll  = R ; status = "";
+        e_id = id;
     }
 
     public String getName() {
@@ -25,11 +27,19 @@ public class EtudiantItem {
         this.status = status;
     }
 
-    public String getRoll() {
+    public int getRoll() {
         return roll;
     }
 
-    public void setRoll(String roll) {
+    public void setRoll(int  roll) {
         this.roll = roll;
+    }
+
+    public long getE_id() {
+        return e_id;
+    }
+
+    public void setE_id(long e_id) {
+        this.e_id = e_id;
     }
 }
