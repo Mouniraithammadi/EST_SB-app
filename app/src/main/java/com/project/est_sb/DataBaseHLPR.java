@@ -159,7 +159,7 @@ Cursor getEtudiantTable(long groupeId){
     long modifier_etudiant( long id  ,String etudiant_NM ){
         SQLiteDatabase bdd = this.getWritableDatabase();
         ContentValues grp_values = new ContentValues();
-        grp_values.put(GROUPES_NM ,etudiant_NM);
+        grp_values.put(ETUDIANTS_NM ,etudiant_NM);
 
 
         return bdd.update(ETUDIANT_TABLE_NM , grp_values,ETUDIANTS_ID+"=?" ,new String[]{String.valueOf( id )});

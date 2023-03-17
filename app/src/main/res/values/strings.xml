@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">EST_SB</string>
+    <string name="action_logout">ferme</string>
+    <string name="exit_dialog_message">Arret de l\'application</string>
+    <string name="yes">oui</string>
+    <string name="no">non</string>
+
 </resources>

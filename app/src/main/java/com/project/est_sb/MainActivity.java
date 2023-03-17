@@ -6,7 +6,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         return context;
     }
 
-
+    private FloatingActionButton fabMain, fabLogout;
     DataBaseHLPR BDD ;
 
 
@@ -55,12 +57,43 @@ BDD = new DataBaseHLPR( this );
         groupe_adapter = new GroupeAdapt(this , groupeItems);
         listView.setAdapter(groupe_adapter);
         groupe_adapter.setOnItemClickListenner(position -> gotoItemActivity(position));
-
        addToolbar();
+        fabMain = findViewById(R.id.fltAb_main);
+        fabLogout = findViewById(R.id.fltAb_logout);
+
+        // Set click listener for logout button
+        fabLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Perform logout action
+                showExitDialog();
+            }
+        });
+
 
 
 
     }
+    private void showExitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.exit_dialog_message)
+                .setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Exit the app
+                        System.exit(0);
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Dismiss the dialog
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 
     private void loadBDD(){
         Cursor curs = BDD.getGroupe();
@@ -112,7 +145,7 @@ BDD = new DataBaseHLPR( this );
     }
 
     private void showUpdatDialog(int position) {
-        MonDialog dlg = new MonDialog();
+        MonDialog dlg = new MonDialog(0,"");
         dlg.setGRP_SJT( groupeItems.get( position ).getGroup() , groupeItems.get( position ).getSujet());
         dlg.show( getSupportFragmentManager() , MonDialog.modifier_grp );
         dlg.setlistener( (grp_name , sjt_name)->modifierGroupe(position , grp_name , sjt_name) );
@@ -136,7 +169,7 @@ BDD = new DataBaseHLPR( this );
 
 
     private void showDialog(){
-MonDialog dlg = new MonDialog();
+MonDialog dlg = new MonDialog(0,"");
 dlg.show(getSupportFragmentManager(), MonDialog.ajouter_grp);
 dlg.setlistener((grpNm , sjtNm)-> {
     addgrp(grpNm, sjtNm);

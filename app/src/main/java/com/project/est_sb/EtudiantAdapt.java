@@ -3,6 +3,7 @@ package com.project.est_sb;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,7 @@ public interface OnItemClickListenner{
         return etudiantItems.size();
     }
 
-    public static class EtudiantVwHolder extends RecyclerView.ViewHolder {
+    public static class EtudiantVwHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         TextView name ; TextView status ; TextView roll ; CardView card ;
 
 
@@ -74,6 +75,13 @@ public interface OnItemClickListenner{
             roll = itemView.findViewById(R.id.roll);
             card = itemView.findViewById(R.id.cardvw);
             itemView.setOnClickListener(v-> clickonItyem.onClick(getAdapterPosition()));
+            itemView.setOnCreateContextMenuListener( this );
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.add( getAdapterPosition() , 0 ,0 , "modifier" );
+            contextMenu.add( getAdapterPosition() ,1,0,"supprimer" ) ;
         }
     }
 }

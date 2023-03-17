@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 public class MonDialog extends DialogFragment {
+
     private static String grp_modifier ="";
     private static String sjt_modifier ="";
     public static final String ajouter_grp = "Ajouter Groupe";
@@ -25,8 +26,18 @@ public class MonDialog extends DialogFragment {
     public static final String ajouter_etud = "Ajouter Etudiant";
     public static final String modifier_etud= "Modifier Etudiant";
     private static Integer index = 1 ;
+    private final int roll;
+    private final String name;
 
     OnClickListener listener;
+
+    public MonDialog(int roll, String name) {
+
+        this.roll = roll;
+        this.name = name;
+    }
+
+
 
     public void setGRP_SJT(String g , String s){
         grp_modifier = g ; sjt_modifier = s ;
@@ -47,8 +58,10 @@ public interface OnClickListener{
             if (getTag().equals(modifier_grp)) dlg = modifierGroupeDialouge();
             if (getTag().equals(ajouter_grp)) dlg = ajouterGroupeDialouge();
             if (getTag().equals(ajouter_etud)) dlg = ajouterEtudiantDialouge();
+//        if (getTag().equals(ETUDIANT_MODIFIER_DIALOG)) dlg = modifierEtudiantDialouge();
 
-            dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             return  dlg ;
     }
 
@@ -128,7 +141,26 @@ public interface OnClickListener{
         return build.create() ;
     }
     private Dialog modifierEtudiantDialouge() {
-        return null ;
+        AlertDialog.Builder build = new AlertDialog.Builder(getActivity()) ;
+        View vw = LayoutInflater.from(getActivity()).inflate(R.layout.dlg, null);
+        build.setView(vw);
+
+        EditText name_edit = vw.findViewById(R.id.edt2); name_edit.setHint("Name");name_edit.setText(name);
+        EditText roll_edit = vw.findViewById(R.id.edt1); roll_edit.setHint("Numero"); roll_edit.setText(roll+""); roll_edit.setEnabled( false );
+        TextView titr = vw.findViewById(R.id.title_dlg); titr.setText("modifier un etudiant");
+        Button cncl = vw.findViewById(R.id.annuler_button);
+        Button add = vw.findViewById(R.id.ajouter_button) ;
+        add.setText( "modifier" );
+        cncl.setOnClickListener(v ->  dismiss());
+        add.setOnClickListener(v-> {
+            String roll , Nm ; Nm = name_edit.getText().toString(); roll = roll_edit.getText().toString() ;
+
+            listener.onClick( roll,Nm);
+          dismiss();
+
+        });
+
+        return build.create() ;
     }
     private Dialog ajouterEtudiantDialouge() {
 

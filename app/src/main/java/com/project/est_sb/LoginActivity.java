@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString().trim();
                 boolean loginSuccessful = databaseHelper.checkUser(username, password);
                login( loginSuccessful );
+               System.exit( 0 );
             }
         });
     }

@@ -3,4 +3,7 @@
 <item
     android:id="@+id/ajouter_etudiant"
     android:title=" AJOUTER ETUDIANT"/>
+    <item
+        android:id="@+id/show_calendar"
+        android:title="Changer la date"/>
 </menu>
