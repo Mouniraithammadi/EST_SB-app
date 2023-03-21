@@ -52,8 +52,8 @@ public interface OnItemClickListenner{
     }
     private int getColor( int p ){
     String s = etudiantItems.get(p).getStatus();
-        if (s.equals("Presente")) return Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(cntxt , R.color.present)));
-        else if (s.equals("Absent")) return Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(cntxt , R.color.absent)));
+        if (s.equals("P")) return Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(cntxt , R.color.present)));
+        else if (s.equals("A")) return Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(cntxt , R.color.absent)));
         return Color.parseColor("#"+Integer.toHexString(ContextCompat.getColor(cntxt , R.color.normal)));
 
     }

@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">EST_SB</string>
-    <string name="action_logout">ferme</string>
+    <string name="app_name">TEACH</string>
+    <string name="action_logout">Fermer</string>
     <string name="exit_dialog_message">Arret de l\'application</string>
     <string name="yes">oui</string>
     <string name="no">non</string>

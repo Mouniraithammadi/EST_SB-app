@@ -19,7 +19,7 @@ public class DataBaseHLPR extends SQLiteOpenHelper {
 
 
 
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
     //    creation de les tables
 //    1 table de GROUPE :
@@ -61,18 +61,22 @@ public class DataBaseHLPR extends SQLiteOpenHelper {
 
 
     //    3 table de ETUDIANTS :
-    private static final String STATUS_TABLE_NM = " STATUS_TABLEAU ";
-    public static final String STATUS_ID = " STATUS_ID ";
-    public static final String STATUS = " STATUS ";
+    public static final String STATUS_TABLE_NM = "status_table";
+    public static final String STATUS_ID = "_id";
+    public static final String STATUS = "status";
+
     public static final String DATE = " STATUS_DATE ";
     // requetes  en SQLite
     private static final String CREATION_DE_STATUS_requete = "CREATE TABLE " + STATUS_TABLE_NM + " ( " +
                                                              STATUS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,"
                                                              + ETUDIANTS_ID + " INTEGER NOT NULL , "
+                                                              + GROUPES_ID + " INTEGER NOT NULL , "
                                                              + DATE + " DATE NOT NULL ,"
                                                              + STATUS + " TEXT NOT NULL , "
                                                              + " UNIQUE ( " + ETUDIANTS_ID + "," + DATE + " ),"
-                                                             + " FOREIGN KEY  ( " + ETUDIANTS_ID + " ) REFERENCES " + ETUDIANT_TABLE_NM + "(" + ETUDIANTS_ID + "));";
+                                                             + " FOREIGN KEY  ( " + ETUDIANTS_ID + " ) REFERENCES " + ETUDIANT_TABLE_NM + "(" + ETUDIANTS_ID + "),"
+                                                             + " FOREIGN KEY  ( " + GROUPES_ID + " ) REFERENCES " + GROUPE_TABLE_NM + "(" + GROUPES_ID + ")"
+                                                             + ");";
 
 
     private static final String DROP_STATUS_TABLEAU = "DROP TABLE IF EXISTS " + STATUS_TABLE_NM;
@@ -121,7 +125,7 @@ public class DataBaseHLPR extends SQLiteOpenHelper {
     }
      long DELET_groupe(long id){
         SQLiteDatabase bdd = this.getReadableDatabase();
-
+         deleteStatusByGroupe(id);
         return bdd.delete( GROUPE_TABLE_NM , GROUPES_ID+"=?" , new String[]{String.valueOf( id )} );
     }
 
@@ -164,13 +168,13 @@ Cursor getEtudiantTable(long groupeId){
 
         return bdd.update(ETUDIANT_TABLE_NM , grp_values,ETUDIANTS_ID+"=?" ,new String[]{String.valueOf( id )});
     }
-    @SuppressLint("Range")
+
     public  boolean getGroupIdOfStudent(int studentId , int groupe_id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT " + GROUPES_ID + " FROM " + ETUDIANT_TABLE_NM + " WHERE " + ETUDIANTS_ID + " = ?", new String[]{String.valueOf(studentId)});
         int groupId = -1; // default value in case no group is found
         if (cursor.moveToFirst()) {
-            groupId = cursor.getInt(cursor.getColumnIndex(GROUPES_ID) );
+            groupId = cursor.getInt(cursor.getColumnIndex(GROUPES_ID) + 0 );
         }
         cursor.close();
         if(groupId == groupe_id) return true;
@@ -185,7 +189,8 @@ Cursor getEtudiantTable(long groupeId){
         Cursor cursor = db.rawQuery(selectQuery, new String[]{groupeNm, groupeSujet});
 
         if (cursor.moveToFirst()) {
-            groupId = cursor.getInt(cursor.getColumnIndex(GROUPES_ID)-0);
+            int a = cursor.getColumnIndex(GROUPES_ID);
+            groupId = cursor.getInt(a);
         }
 
         cursor.close();
@@ -229,26 +234,145 @@ Cursor getEtudiantTable(long groupeId){
             return true;
         }
     }
+
+//    long addStatus(long eId , String date , String status ){
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//        values.put( ETUDIANTS_ID , eId );
+//        values.put( DATE , date );
+//        values.put( STATUS , status);
+//        long result =db.insert(  STATUS_TABLE_NM ,null , values ) ;
+//        System.out.println ("\n\n\n\n\n addStatus"+status + result +" \n\n\n\n\n");
+//
+//        return result ;
+//    }
+public long addStatus(long eId ,long G_id, String date , String status ) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put(ETUDIANTS_ID, eId);
+    values.put(GROUPES_ID, G_id);
+    values.put(DATE, date);
+    values.put(STATUS, status);
+    long result = db.insert(STATUS_TABLE_NM, null, values);
+  System.out.println ("\n\n\n\n\n addStatus "+status + " nomber "+result +" \n\n\n\n\n");
+    return result;
+}
+//long addStatus(long eId , String date , String status ){
+//    SQLiteDatabase db = this.getWritableDatabase();
+//    ContentValues values = new ContentValues();
+//    values.put( ETUDIANTS_ID , eId );
+//    values.put( DATE , date );
+//    values.put( STATUS , status);
+//    long result = -1;
+//
+//    // Check if a record with the same eId and date exists
+//    String[] projection = { ETUDIANTS_ID, DATE };
+//    String selection = ETUDIANTS_ID + " = ? AND " + DATE + " = ?";
+//    String[] selectionArgs = { String.valueOf(eId), date };
+//    Cursor cursor = db.query(STATUS_TABLE_NM, projection, selection, selectionArgs, null, null, null);
+//    if (cursor.getCount() > 0) {
+//        // A record with the same eId and date already exists
+//        // Update the existing record
+//        result = db.update(STATUS_TABLE_NM, values, selection, selectionArgs);
+//    } else {
+//        // Insert a new record
+//        result = db.insert(STATUS_TABLE_NM, null, values);
+//    }
+//
+//    cursor.close();
+//    db.close();
+//    System.out.println ("\n\n\n\n\n addStatus "+status + " nomber "+result +" \n\n\n\n\n");
+//    return result;
+//}
+public long modifierStatus(long eId , String date , String status ) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put(STATUS, status);
+    String whereClause = ETUDIANTS_ID + " = ? AND " + DATE + " = ?";
+    String[] whereArgs = { String.valueOf(eId), date };
+    long x = db.update(STATUS_TABLE_NM, values, whereClause, whereArgs);
+    System.out.println ("\n\n\n\n\n modifierStatus "+status + x +" \n\n\n\n\n");
+    return x;
 }
 
+//    long modifierStatus(long eId , String date , String status ){
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//
+//        values.put( STATUS , status);
+//        String wherClause = DATE + " = '"+date+"' AND " + ETUDIANTS_ID + " = "+eId;
+//        long x = db.update(  STATUS_TABLE_NM , values , wherClause ,null ) ;
+//        System.out.println ("\n\n\n\n\n modifierStatus "+status + x +" \n\n\n\n\n");
+//        return x ;
+//    }
+public String getStatus(long e_id, String date) {
+    SQLiteDatabase db = getReadableDatabase();
+    String[] columns = { STATUS };
+    String selection = ETUDIANTS_ID + " = ? AND " + DATE + " = ?";
+    String[] selectionArgs = { String.valueOf(e_id), date };
+    Cursor cursor = db.query(STATUS_TABLE_NM, columns,selection, selectionArgs, null, null, null);
+    String status = null;
+    if (cursor.moveToFirst()) {
+        status = cursor.getString(cursor.getColumnIndexOrThrow(STATUS));
+    }
+    cursor.close();
+    return status;
+}
 
+//String getStatus(long e_id, String date) {
+//
+//    String status = null;
+//    SQLiteDatabase db = this.getReadableDatabase();
+//    String[] projection = {STATUS};
+//    String selection = DATE + " = ? AND " + ETUDIANTS_ID + " = ?";
+//    String[] selectionArgs = {date, String.valueOf(e_id)};
+//    Cursor cursor = db.query(STATUS_TABLE_NM, projection, selection, selectionArgs, null, null, null, "1");
+//    if (cursor.moveToFirst()) {
+//        String[] columnNames = cursor.getColumnNames();
+//        for (String columnName : columnNames) {
+//            System.out.println("Column name: " + columnName);
+//        }
+//        try {
+//            int statusIndex = cursor.getColumnIndexOrThrow(STATUS);
+//            status = cursor.getString(statusIndex);
+//        } catch (IllegalArgumentException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//    cursor.close();
+//    db.close();
+//    System.out.println ("\n\n\n\n\n getStatus     "+ status +" \n\n\n\n\n");
+//    return status;
+//}
 
+//Cursor getDistanceMonth(long Gid){
+//    SQLiteDatabase db = getReadableDatabase();
+//    return db.query ( STATUS_TABLE_NM ,new String[]{DATE} , GROUPES_ID +" = "+Gid , null ,"substr("+DATE+ ")" ,null , null  );
+//}
+Cursor getDistanceMonth(long Gid){
+    SQLiteDatabase db = getReadableDatabase();
 
+return db.query ( STATUS_TABLE_NM ,new String[]{DATE} ,GROUPES_ID + " = " +Gid , null , null , null , null );
+    }
+    public int deleteStatusByGroupe(long group_id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String whereClause = GROUPES_ID + " = ?";
+        String[] whereArgs = { String.valueOf(group_id) };
+        int result = db.delete(STATUS_TABLE_NM, whereClause, whereArgs);
+        System.out.println ("\n\n\n\n\n deleteStatus "+result +" \n\n\n\n\n");
+        return result;
+    }
+    public int deleteStatus(long group_id, String date) {
+        SQLiteDatabase db = getWritableDatabase();
+        String whereClause = GROUPES_ID + " = ? AND " + DATE + " = ?";
+        String[] whereArgs = {String.valueOf(group_id), date};
+        int x = db.delete(STATUS_TABLE_NM, whereClause, whereArgs);
+        System.out.println("\n\n\n\n\n deleteStatus "+x+" \n\n\n\n\n");
+        return x;
+    }
+//"substr("+DATE+",4,7)"
+//    return db.rawQuery("SELECT "+DATE+", strftime('%m', "+DATE+") as month FROM " + STATUS_TABLE_NM +
+//                       " WHERE " + GROUPES_ID + " = " + Gid +
+//                       " GROUP BY month", null);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

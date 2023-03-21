@@ -10,8 +10,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -74,14 +76,27 @@ BDD = new DataBaseHLPR( this );
 
 
     }
+    void logout(){
+        // Exit the app
+        // Clear user session data
+        SharedPreferences prefs = getSharedPreferences("UserSessionData", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.commit();
+
+        // Redirect to login screen
+
+        Intent intent = new Intent(this, LoginActivity.class );
+        startActivity(intent);
+        finish();
+    }
     private void showExitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.exit_dialog_message)
                 .setCancelable(false)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Exit the app
-                        System.exit(0);
+                      logout ();
                     }
                 })
                 .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {

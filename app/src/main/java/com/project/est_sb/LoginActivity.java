@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString().trim();
                 boolean loginSuccessful = databaseHelper.checkUser(username, password);
                login( loginSuccessful );
-               System.exit( 0 );
+
             }
         });
     }
@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent( this,  MainActivity.class );
             startActivity(intent);
             Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+            System.exit( 0 );
         } else {
             Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
         }

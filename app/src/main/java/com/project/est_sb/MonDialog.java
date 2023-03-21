@@ -25,7 +25,7 @@ public class MonDialog extends DialogFragment {
     public static final String modifier_grp = "Modifier Groupe";
     public static final String ajouter_etud = "Ajouter Etudiant";
     public static final String modifier_etud= "Modifier Etudiant";
-    private static Integer index = 1 ;
+    public static Integer index = 1 ;
     private final int roll;
     private final String name;
 
@@ -169,7 +169,7 @@ public interface OnClickListener{
         build.setView(vw);
 
         EditText name_edit = vw.findViewById(R.id.edt2); name_edit.setHint("Name");
-        EditText roll_edit = vw.findViewById(R.id.edt1); roll_edit.setHint("Numero"); roll_edit.setText(index.toString());
+        EditText roll_edit = vw.findViewById(R.id.edt1); roll_edit.setHint("Numero"); roll_edit.setText((++index).toString());
         TextView titr = vw.findViewById(R.id.title_dlg); titr.setText("ajouter un etudiant");
         Button cncl = vw.findViewById(R.id.annuler_button);
         Button add = vw.findViewById(R.id.ajouter_button) ;
